@@ -6,7 +6,6 @@
     <button type="submit">Login</button>
 </form>
 {{/user}}
-
 {{#user}}
 Welcome {{name}}!<br>
 <form action="/logout" method="post">
@@ -18,11 +17,7 @@ Welcome {{name}}!<br>
     <input type="datetime-local" name="dateTime" value="{{now}}"/>
     <button type="submit">Add Event</button>
 </form>
-
-
 {{/user}}
-
-
 {{#events}}
 {{description}} {{dateTime}}
 {{#userExsists}}
