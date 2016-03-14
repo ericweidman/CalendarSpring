@@ -1,8 +1,10 @@
 package com.theironyard.contollers;
 
 import com.theironyard.entities.Event;
+import com.theironyard.entities.Favorite;
 import com.theironyard.entities.User;
 import com.theironyard.services.EventRepository;
+import com.theironyard.services.FavoriteRepository;
 import com.theironyard.services.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,36 +24,57 @@ public class CalendarSpringController {
     EventRepository events;
     @Autowired
     UserRepository users;
+    @Autowired
+    FavoriteRepository favorites;
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
-    public String home(Model model, HttpSession session){
+    public String home(Model model, HttpSession session) {
         String userName = (String) session.getAttribute("userName");
-        if(userName != null){
+        if (userName != null) {
             model.addAttribute("user", users.findFirstByName(userName));
+            model.addAttribute("userExsists", true);
             model.addAttribute("now", LocalDateTime.now());
         }
         model.addAttribute("events", events.findAllByOrderByDateTimeDesc());
         return "home";
     }
+
     @RequestMapping(path = "/create-event", method = RequestMethod.POST)
-    public String createEvent(String description, String dateTime){
-        Event event = new Event(description, LocalDateTime.parse(dateTime));
-        events.save(event);
+    public String createEvent(HttpSession session, String description, String dateTime) {
+        String userName = (String) session.getAttribute("userName");
+        if (userName != null) {
+            Event event = new Event(description, LocalDateTime.parse(dateTime), users.findFirstByName(userName));
+            events.save(event);
+        }
         return "redirect:/";
     }
+
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public String login(HttpSession session, String name){
+    public String login(HttpSession session, String name) {
         User user = users.findFirstByName(name);
-        if (user == null){
+        if (user == null) {
             user = new User(name);
             users.save(user);
         }
         session.setAttribute("userName", name);
         return "redirect:/";
     }
+
     @RequestMapping(path = "/logout", method = RequestMethod.POST)
-    public String logout(HttpSession session){
+    public String logout(HttpSession session) {
         session.invalidate();
+        return "redirect:/";
+    }
+
+    @RequestMapping(path = "/fav", method = RequestMethod.POST)
+    public String fav(HttpSession session, int id) {
+        String userName = (String) session.getAttribute("userName");
+        if (userName != null) {
+            User user = users.findFirstByName(userName);
+            Event event = events.findOne(id);
+            favorites.save(new Favorite(user, event));
+
+        }
         return "redirect:/";
     }
 }

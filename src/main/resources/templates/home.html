@@ -24,7 +24,14 @@ Welcome {{name}}!<br>
 
 
 {{#events}}
-{{description}} {{dateTime}}<br>
+{{description}} {{dateTime}}
+{{#userExsists}}
+<form action="/fav" method="post" style="display: inline">
+    <input type="hidden" value="{{id}}" name="id"/>
+    <button type="submit">Favorite</button>
+</form>
+{{/userExsists}}
+<br>
 {{/events}}
 </body>
 </html>
