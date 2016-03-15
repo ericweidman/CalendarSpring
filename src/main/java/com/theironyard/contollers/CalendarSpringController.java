@@ -38,14 +38,12 @@ public class CalendarSpringController {
             model.addAttribute("userExsists", true);
             model.addAttribute("now", LocalDateTime.now());
 
-            for(Event event : eventEntities){
+            for (Event event : eventEntities) {
                 event.setShowFavButton(favorites.findByUserAndEvent(user, event) == null);
             }
         }
-        else{
-            model.addAttribute("events", eventEntities);
-        }
 
+        model.addAttribute("events", eventEntities);
         return "home";
     }
 
